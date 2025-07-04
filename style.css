@@ -3,7 +3,7 @@
     max-width: 700px;
     margin: auto;
     padding: 1em;
-    background: #f7f7f7;
+    background: #00fa9a;
     color: #333;
 }
 header {
@@ -104,3 +104,41 @@ button:hover {
 .media-item button:hover {
     background: #c0392b;
 }
+
+#slider-section {
+    margin: 2em 0;
+}
+
+.slider-container {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    display: flex;
+    border-radius: 8px;
+    scroll-behavior: smooth;
+}
+
+.slider-track {
+    display: flex;
+}
+
+.slider-track img {
+    width: 500px;
+    height: 750px;
+    object-fit: cover;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    border-radius: 8px;
+}
+
+
+/* Добавим плавную прокрутку */
+.slider-container {
+    scroll-behavior: smooth;
+}
+
+h1, h2, h3, p, .footer-links {
+    text-align: center;
+}
+
+
+
