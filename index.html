@@ -2,48 +2,44 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Weedo — Премиум доставка 420</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weedo — Премиум доставка 420 круглосуточно</title>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <header>
     <h1>Weedo</h1>
     <p>Премиум доставка 420 круглосуточно</p>
-    <p>Telegram: <a href="https://t.me/weedodelivery">@weedodelivery</a></p>
+    <p>Telegram: <a href="https://t.me/weedodelivery" target="_blank">@weedodelivery</a></p>
 </header>
 
-<section id="auth-section">
-    <div id="auth-tabs">
-        <button id="login-tab" class="active">Войти</button>
-        <button id="signup-tab">Регистрация</button>
-    </div>
-    <div id="auth-forms">
+<main>
+    <section id="auth-section">
+        <h2>Вход для загрузки фото/видео</h2>
         <form id="login-form">
-            <input type="email" id="login-email" placeholder="Email" required />
-            <input type="password" id="login-password" placeholder="Пароль" required />
+            <input type="email" id="email" placeholder="Email" required />
+            <input type="password" id="password" placeholder="Пароль" required />
             <button type="submit">Войти</button>
         </form>
-        <form id="signup-form" style="display:none">
-            <input type="email" id="signup-email" placeholder="Email" required />
-            <input type="password" id="signup-password" placeholder="Пароль" required />
-            <button type="submit">Зарегистрироваться</button>
-        </form>
-    </div>
-    <button id="logout-btn" style="display:none">Выйти</button>
-</section>
+        <p id="auth-message"></p>
+    </section>
 
-<section id="upload-section" style="display:none">
-    <input type="file" id="file-input" accept="image/*,video/*" />
-    <button id="upload-btn">Загрузить</button>
-    <div id="preview" class="preview"></div>
-</section>
+    <section id="upload-section" style="display:none;">
+        <h2>Добавить фото или видео</h2>
+        <input type="file" id="file-input" accept="image/*,video/*" />
+        <button id="upload-btn">Загрузить</button>
+        <p id="upload-message"></p>
+        <button id="logout-btn">Выйти</button>
+    </section>
 
-<section id="gallery"></section>
+    <section id="gallery-section">
+        <h2>Галерея</h2>
+        <div id="gallery" class="gallery-grid">
+            <p>Загрузка...</p>
+        </div>
+    </section>
+</main>
 
-<div id="notification"></div>
-
-<script src="https://esm.sh/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
