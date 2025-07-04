@@ -19,9 +19,10 @@ const logoutBtn = document.getElementById('logout-btn')
 const authSection = document.getElementById('auth-section')
 const gallery = document.getElementById('gallery')
 
+// Проверка авторизации
 async function checkAuth() {
-    const user = supabase.auth.user()
-    if (user) {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session && session.user) {
         authSection.style.display = 'none'
         uploadSection.style.display = 'block'
     } else {
@@ -30,6 +31,7 @@ async function checkAuth() {
     }
 }
 
+// Вход
 loginForm.addEventListener('submit', async e => {
     e.preventDefault()
     authMessage.style.color = 'red'
@@ -37,7 +39,11 @@ loginForm.addEventListener('submit', async e => {
     const email = emailInput.value
     const password = passwordInput.value
 
-    const { user, error } = await supabase.auth.signIn({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+    })
+
     if (error) {
         authMessage.textContent = 'Ошибка входа: ' + error.message
     } else {
@@ -48,11 +54,13 @@ loginForm.addEventListener('submit', async e => {
     }
 })
 
+// Выход
 logoutBtn.addEventListener('click', async () => {
     await supabase.auth.signOut()
     await checkAuth()
 })
 
+// Загрузка файла
 uploadBtn.addEventListener('click', async () => {
     uploadMessage.style.color = 'red'
     uploadMessage.textContent = ''
@@ -78,12 +86,13 @@ uploadBtn.addEventListener('click', async () => {
     }
 })
 
+// Загрузка галереи
 async function loadGallery() {
     gallery.innerHTML = 'Загрузка...'
     const { data, error } = await supabase.storage.from('media').list('', {
         limit: 100,
         offset: 0,
-        sortBy: { column: 'created_at', order: 'desc' }
+        sortBy: { column: 'name', order: 'desc' }
     })
 
     if (error) {
@@ -99,7 +108,8 @@ async function loadGallery() {
     gallery.innerHTML = ''
 
     for (const item of data) {
-        const publicUrl = supabase.storage.from('media').getPublicUrl(item.name).publicURL
+        const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(item.name)
+        const publicUrl = publicUrlData.publicUrl
 
         let mediaElem
         if (item.name.match(/\.(mp4|webm|ogg)$/i)) {
@@ -118,6 +128,7 @@ async function loadGallery() {
     }
 }
 
+// При загрузке страницы
 window.addEventListener('load', async () => {
     await checkAuth()
     await loadGallery()
