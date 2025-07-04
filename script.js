@@ -23,6 +23,7 @@ let currentUser = null
 
 async function checkAuth() {
     const { data: { user } } = await supabase.auth.getUser()
+    console.log('Текущий пользователь:', user)  // Лог для отладки
     currentUser = user
     if (user) {
         authSection.style.display = 'none'
@@ -130,6 +131,7 @@ async function loadGallery() {
         if (currentUser) {
             const deleteBtn = document.createElement('button')
             deleteBtn.textContent = 'Удалить'
+            deleteBtn.className = 'delete-btn'
             deleteBtn.addEventListener('click', async () => {
                 if (confirm(`Удалить файл ${item.name}?`)) {
                     const { error: deleteError } = await supabase.storage.from('media').remove([item.name])
@@ -146,6 +148,13 @@ async function loadGallery() {
         gallery.appendChild(container)
     }
 }
+
+// Слушатель для отслеживания изменений авторизации (вход/выход)
+supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('Смена состояния авторизации:', event, session)
+    await checkAuth()
+    await loadGallery()
+})
 
 window.addEventListener('load', async () => {
     await checkAuth()
