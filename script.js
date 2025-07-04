@@ -19,10 +19,12 @@ const logoutBtn = document.getElementById('logout-btn')
 const authSection = document.getElementById('auth-section')
 const gallery = document.getElementById('gallery')
 
-// Проверка авторизации
+let currentUser = null
+
 async function checkAuth() {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session && session.user) {
+    const { data: { user } } = await supabase.auth.getUser()
+    currentUser = user
+    if (user) {
         authSection.style.display = 'none'
         uploadSection.style.display = 'block'
     } else {
@@ -31,7 +33,6 @@ async function checkAuth() {
     }
 }
 
-// Вход
 loginForm.addEventListener('submit', async e => {
     e.preventDefault()
     authMessage.style.color = 'red'
@@ -54,13 +55,12 @@ loginForm.addEventListener('submit', async e => {
     }
 })
 
-// Выход
 logoutBtn.addEventListener('click', async () => {
     await supabase.auth.signOut()
     await checkAuth()
+    await loadGallery()
 })
 
-// Загрузка файла
 uploadBtn.addEventListener('click', async () => {
     uploadMessage.style.color = 'red'
     uploadMessage.textContent = ''
@@ -86,13 +86,12 @@ uploadBtn.addEventListener('click', async () => {
     }
 })
 
-// Загрузка галереи
 async function loadGallery() {
     gallery.innerHTML = 'Загрузка...'
     const { data, error } = await supabase.storage.from('media').list('', {
         limit: 100,
         offset: 0,
-        sortBy: { column: 'name', order: 'desc' }
+        sortBy: { column: 'created_at', order: 'desc' }
     })
 
     if (error) {
@@ -108,8 +107,10 @@ async function loadGallery() {
     gallery.innerHTML = ''
 
     for (const item of data) {
-        const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(item.name)
-        const publicUrl = publicUrlData.publicUrl
+        const publicUrl = supabase.storage.from('media').getPublicUrl(item.name).publicURL
+
+        const container = document.createElement('div')
+        container.className = 'media-item'
 
         let mediaElem
         if (item.name.match(/\.(mp4|webm|ogg)$/i)) {
@@ -124,11 +125,28 @@ async function loadGallery() {
             continue
         }
 
-        gallery.appendChild(mediaElem)
+        container.appendChild(mediaElem)
+
+        if (currentUser) {
+            const deleteBtn = document.createElement('button')
+            deleteBtn.textContent = 'Удалить'
+            deleteBtn.addEventListener('click', async () => {
+                if (confirm(`Удалить файл ${item.name}?`)) {
+                    const { error: deleteError } = await supabase.storage.from('media').remove([item.name])
+                    if (deleteError) {
+                        alert('Ошибка удаления: ' + deleteError.message)
+                    } else {
+                        await loadGallery()
+                    }
+                }
+            })
+            container.appendChild(deleteBtn)
+        }
+
+        gallery.appendChild(container)
     }
 }
 
-// При загрузке страницы
 window.addEventListener('load', async () => {
     await checkAuth()
     await loadGallery()

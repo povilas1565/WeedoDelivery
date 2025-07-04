@@ -83,3 +83,24 @@ button:hover {
     background: #007bff;
     color: white;
 }
+
+.media-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.media-item button {
+    display: block;
+    margin: 10px auto 0;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.media-item button:hover {
+    background: #c0392b;
+}
