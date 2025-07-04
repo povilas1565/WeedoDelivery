@@ -21,9 +21,10 @@ const gallery = document.getElementById('gallery')
 
 let currentUser = null
 
+// Проверяем сессию при загрузке
 async function checkAuth() {
     const { data: { session } } = await supabase.auth.getSession()
-    console.log('session:', session)
+    console.log('session при загрузке:', session)
 
     if (session && session.user) {
         currentUser = session.user
@@ -36,14 +37,31 @@ async function checkAuth() {
     }
 }
 
+// Слушаем смену сессии
+supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('Смена состояния авторизации:', event, session)
+    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+        currentUser = session?.user ?? null
+        authSection.style.display = 'none'
+        uploadSection.style.display = 'block'
+    } else {
+        currentUser = null
+        authSection.style.display = 'block'
+        uploadSection.style.display = 'none'
+    }
+    await loadGallery()
+})
+
+// Авторизация
 loginForm.addEventListener('submit', async e => {
     e.preventDefault()
     authMessage.style.color = 'red'
     authMessage.textContent = ''
+
     const email = emailInput.value
     const password = passwordInput.value
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
         email,
         password
     })
@@ -53,17 +71,18 @@ loginForm.addEventListener('submit', async e => {
     } else {
         authMessage.style.color = 'green'
         authMessage.textContent = 'Вход успешен!'
-        await checkAuth()
-        await loadGallery()
+        // больше не вызываем checkAuth() здесь
+        // теперь всё сработает через onAuthStateChange
     }
 })
 
+// Выход
 logoutBtn.addEventListener('click', async () => {
     await supabase.auth.signOut()
-    await checkAuth()
-    await loadGallery()
+    // больше не вызываем checkAuth() здесь
 })
 
+// Загрузка файла
 uploadBtn.addEventListener('click', async () => {
     uploadMessage.style.color = 'red'
     uploadMessage.textContent = ''
@@ -89,6 +108,7 @@ uploadBtn.addEventListener('click', async () => {
     }
 })
 
+// Загрузка галереи
 async function loadGallery() {
     gallery.innerHTML = 'Загрузка...'
     const { data, error } = await supabase.storage.from('media').list('', {
@@ -133,7 +153,6 @@ async function loadGallery() {
         if (currentUser) {
             const deleteBtn = document.createElement('button')
             deleteBtn.textContent = 'Удалить'
-            deleteBtn.className = 'delete-btn'
             deleteBtn.addEventListener('click', async () => {
                 if (confirm(`Удалить файл ${item.name}?`)) {
                     const { error: deleteError } = await supabase.storage.from('media').remove([item.name])
@@ -151,13 +170,7 @@ async function loadGallery() {
     }
 }
 
-// Слушатель для отслеживания изменений авторизации (вход/выход)
-supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('Смена состояния авторизации:', event, session)
-    await checkAuth()
-    await loadGallery()
-})
-
+// При загрузке страницы
 window.addEventListener('load', async () => {
     await checkAuth()
     await loadGallery()
