@@ -1,0 +1,85 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    max-width: 700px;
+    margin: auto;
+    padding: 1em;
+    background: #f7f7f7;
+    color: #333;
+}
+header {
+    text-align: center;
+    margin-bottom: 2em;
+}
+header h1 {
+    margin: 0.2em 0;
+}
+form {
+    margin-bottom: 1em;
+}
+input, button {
+    padding: 0.6em;
+    margin: 0.3em 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+button {
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background: #0056b3;
+}
+#gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1em;
+}
+#gallery img, #gallery video {
+    width: 100%;
+    border-radius: 6px;
+}
+.preview img, .preview video {
+    max-width: 200px;
+    max-height: 200px;
+    margin-top: 1em;
+    border-radius: 6px;
+}
+.delete-btn {
+    background: darkred;
+    color: white;
+    border: none;
+    padding: 0.3em 0.6em;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0.3em;
+    display: block;
+}
+#notification {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #333;
+    color: white;
+    padding: 0.6em 1em;
+    border-radius: 4px;
+    display: none;
+}
+
+#auth-tabs {
+    display: flex;
+    gap: 0.5em;
+    margin-bottom: 1em;
+}
+#auth-tabs button {
+    flex: 1;
+    padding: 0.5em;
+    background: #ddd;
+    border: none;
+    cursor: pointer;
+}
+#auth-tabs button.active {
+    background: #007bff;
+    color: white;
+}
