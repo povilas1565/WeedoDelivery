@@ -22,13 +22,15 @@ const gallery = document.getElementById('gallery')
 let currentUser = null
 
 async function checkAuth() {
-    const { data: { user } } = await supabase.auth.getUser()
-    console.log('Текущий пользователь:', user)  // Лог для отладки
-    currentUser = user
-    if (user) {
+    const { data: { session } } = await supabase.auth.getSession()
+    console.log('session:', session)
+
+    if (session && session.user) {
+        currentUser = session.user
         authSection.style.display = 'none'
         uploadSection.style.display = 'block'
     } else {
+        currentUser = null
         authSection.style.display = 'block'
         uploadSection.style.display = 'none'
     }
